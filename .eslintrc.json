@@ -1,3 +1,44 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript", "prettier"],
+  "plugins": ["simple-import-sort"],
+  "rules": {
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          ["^next"],
+          ["^react", "^react/.*", "^@hookform", "^zod"],
+          ["^@tanstack/react-query"],
+          ["^@consta/uikit", "^@consta/icons"],
+          ["^clsx"],
+          ["^services/", "^components/", "^utils/", "^types/"],
+          ["^.+\\.css$", "^.+\\.scss$"],
+          ["^"]
+        ]
+      }
+    ],
+    "simple-import-sort/exports": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.ts", "**/*.tsx"],
+      "rules": {
+        "simple-import-sort/imports": [
+          "error",
+          {
+            "groups": [
+              ["^next"],
+              ["^react", "^react/.*", "^@hookform", "^zod"],
+              ["^@tanstack/react-query"],
+              ["^@consta/uikit", "^@consta/icons"],
+              ["^clsx"],
+              ["^services/", "^components/", "^utils/", "^types/"],
+              ["^.+\\.css$", "^.+\\.scss$"],
+              ["^"]
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
