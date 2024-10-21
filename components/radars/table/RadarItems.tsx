@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@consta/uikit/Button'
 import { Table } from '@consta/uikit/Table'
@@ -14,27 +14,48 @@ import {
   RadarItemMenuState,
   RadarItemsProps,
 } from '@/components/radars/table/types'
-import { getItemColumns } from '@/components/radars/table/utils'
+import {
+  getItemColumns,
+  getItemQuadrantsMap,
+  transformItems,
+} from '@/components/radars/table/utils'
 import { useModal } from '@/components/ui/modal/hooks'
+import { useSnackbar } from '@/components/ui/snackbar/hooks'
+import { SnackbarAddProps } from '@/components/ui/snackbar/types'
 import Stack from '@/components/ui/Stack'
 import { H2 } from '@/components/ui/Text'
 
-const RadarItems = ({ data }: RadarItemsProps) => {
-  const { setModal } = useModal()
+const RadarItems = ({ data, refetch }: RadarItemsProps) => {
+  const { addSnackbar } = useSnackbar()
+  const { setModal, closeModal } = useModal()
   const [menuState, setMenuState] = useState<ItemMenuState>({})
 
-  const handleMenuState = ({ isOpen, action, data }: RadarItemMenuState) => {
-    const rowId = data.id
+  const { items, ...radar } = data
+  const itemQuadrantsMap = useMemo(() => getItemQuadrantsMap(items), [items])
+
+  const handleMenuState = ({
+    isOpen,
+    action,
+    data: item,
+  }: RadarItemMenuState) => {
+    const itemId = item.id
     setMenuState((prevState) => ({
       ...prevState,
-      [rowId]: { ...prevState[rowId], isOpen, action, data },
+      [itemId]: { ...prevState[itemId], isOpen, action, data: item },
     }))
+
+    const [baseId] = itemId.split('_')
 
     if (action === ItemActionType.Edit) {
       setModal({
         title: 'Редактирование элемента радара',
-        // content: data.description,
-        content: <EditRadarItemForm data={data} />,
+        content: (
+          <EditRadarItemForm
+            radar={radar}
+            item={itemQuadrantsMap[baseId]}
+            addSnackbar={handleSnackbar}
+          />
+        ),
       })
     }
 
@@ -46,21 +67,27 @@ const RadarItems = ({ data }: RadarItemsProps) => {
     }
   }
 
+  const handleSnackbar = async ({ message, status }: SnackbarAddProps) => {
+    addSnackbar({ message, status })
+    closeModal()
+    await refetch()
+  }
+
   useEffect(() => {
     console.log('menuState', menuState)
   }, [menuState])
 
   const columns = getItemColumns({
-    items: data,
+    items,
     setMenuState: handleMenuState,
-    menuState: menuState,
+    menuState,
   })
 
   return (
     <>
       <H2>Элементы радара</H2>
-      {data.length ? (
-        <Table rows={data} columns={columns} />
+      {items.length ? (
+        <Table rows={transformItems(items)} columns={columns} />
       ) : (
         <Stack direction="row" className="items-center">
           <Text as="p">Элементы отсутствуют</Text>

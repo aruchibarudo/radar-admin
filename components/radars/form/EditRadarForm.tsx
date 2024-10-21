@@ -17,13 +17,12 @@ import {
   formatFieldsToObjects,
 } from '@/components/radars/form/utils'
 import RadarItems from '@/components/radars/table/RadarItems'
-import { RadarItemColumn } from '@/components/radars/table/types'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import Stack from '@/components/ui/Stack'
 import { updateRadar } from '@/services/radars/radarService'
 
-const EditRadarForm = ({ data }: EditRadarFormProps) => {
+const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {
   const [isFormVisible, setIsFormVisible] = useState(true)
   const { addSnackbar } = useSnackbar()
 
@@ -91,7 +90,7 @@ const EditRadarForm = ({ data }: EditRadarFormProps) => {
         </FormProvider>
       )}
 
-      <RadarItems data={data.items as RadarItemColumn[]} />
+      <RadarItems data={data} refetch={refetch} />
     </Stack>
   )
 }

@@ -26,11 +26,11 @@ export type UpdateRadarParams = Pick<Radar, 'id'> & {
   data: Omit<Radar, 'id' | 'items'>
 }
 
+export type RadarItemFormQuadrant = Pick<RadarItem, 'id'> & {
+  quadrant: string
+}
 export type UpdateRadarItemParams = Pick<RadarItem, 'id'> & {
   data: Omit<RadarItem, 'id' | 'quadrant'> & {
-    radars: {
-      id: string
-      quadrant: string
-    }[]
+    radars: RadarItemFormQuadrant[]
   }
 }

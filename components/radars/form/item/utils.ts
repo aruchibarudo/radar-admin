@@ -1,5 +1,6 @@
+import { RadarItemFormData } from '@/components/radars/form/item/types'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
-import { Radar } from '@/services/radars/types'
+import { Radar, RadarItemFormQuadrant } from '@/services/radars/types'
 
 export const getRadarsList = (radars: Radar[] | undefined): SelectItem[] => {
   if (!radars) {
@@ -7,4 +8,19 @@ export const getRadarsList = (radars: Radar[] | undefined): SelectItem[] => {
   }
 
   return radars.map(({ id, name }) => ({ id, label: name }))
+}
+
+export const transformItemFormData = (data: RadarItemFormData) => {
+  const radars = data.radars.reduce<RadarItemFormQuadrant[]>((acc, item) => {
+    item.quadrants.forEach((quadrant) => {
+      acc.push({ id: item.radarId, quadrant: quadrant.label })
+    })
+
+    return acc
+  }, [])
+
+  return {
+    ...data,
+    radars,
+  }
 }

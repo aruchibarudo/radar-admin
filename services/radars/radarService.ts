@@ -19,5 +19,5 @@ export const updateRadar = ({ id, data }: UpdateRadarParams) => {
 }
 
 export const updateRadarItem = ({ id, data }: UpdateRadarItemParams) => {
-  return ApiService.post<RadarItem>(`/item/${id}`, { body: data })
+  return ApiService.put<RadarItem>(`/item/${id}`, { body: data })
 }

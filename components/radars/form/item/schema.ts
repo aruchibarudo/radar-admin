@@ -1,16 +1,30 @@
 import z from 'zod'
 
+import { RadarItemProbationResult } from '@/services/radars/types'
+
 export const radarItemSchema = z.object({
   name: z.string().min(4),
   description: z.string().min(4),
   ring: z.string().min(4),
   ru: z.boolean(),
-  probation_result: z.string(),
+  probation_result: z.nativeEnum(RadarItemProbationResult),
   radars: z
     .object({
-      id: z.string(),
+      radarId: z.string(),
       label: z.string(),
+      quadrants: z
+        .object({
+          id: z.string(),
+          label: z.string(),
+        })
+        .array(),
     })
     .array()
-    .nullish(),
+    .min(1, 'Квадрант не может быть пустым'),
+  quadrants: z.array(
+    z.object({
+      id: z.string(),
+      label: z.string(),
+    }),
+  ),
 })

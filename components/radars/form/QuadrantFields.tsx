@@ -24,6 +24,8 @@ const QuadrantFields = ({ control, errors }: QuadrantFieldsProps) => {
     name: 'quadrants',
   })
 
+  console.log('edit fields', fields)
+
   return (
     <div>
       <H3>Квадранты</H3>

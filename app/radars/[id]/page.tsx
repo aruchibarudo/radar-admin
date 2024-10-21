@@ -16,7 +16,7 @@ import { getRadar } from '@/services/radars/radarService'
 import { PageParams } from '@/types/nextParams'
 
 const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
-  const { isPending, error, data } = useQuery({
+  const { isPending, error, data, refetch } = useQuery({
     queryKey: ['radar', id],
     queryFn: () => getRadar({ id }),
   })
@@ -52,7 +52,7 @@ const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
       </GridItem>
 
       <GridItem>
-        <EditRadarForm data={data} />
+        <EditRadarForm data={data} refetch={refetch} />
       </GridItem>
 
       <GridItem>

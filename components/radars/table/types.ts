@@ -1,5 +1,6 @@
 import { ItemActionType } from '@/components/radars/table/actions/types'
-import { RadarItem } from '@/services/radars/types'
+import { Radar, RadarItem } from '@/services/radars/types'
+import { Refetch } from '@/types/useQuery'
 
 export enum ItemColumnTitles {
   id = 'ID',
@@ -12,14 +13,17 @@ export enum ItemColumnTitles {
   actions = 'Действие',
 }
 
-export type RadarItemColumn = RadarItem & { actions: string }
+export type RadarItemColumn = RadarItem & { actions?: string }
 
 export type RadarItemsProps = {
-  data: RadarItemColumn[]
-}
+  data: Radar
+} & Refetch
 
 export type RadarItemMenuState = {
   isOpen: boolean
   data: RadarItem
   action?: ItemActionType
 }
+
+export type RadarItemQuadrants = RadarItem & { quadrants: string[] }
+export type RadarItemQuadrantsMap = Record<string, RadarItemQuadrants>

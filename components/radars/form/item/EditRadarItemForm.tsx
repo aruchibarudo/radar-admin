@@ -1,100 +1,178 @@
 import React from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useQuery } from '@tanstack/react-query'
 
 import { Button } from '@consta/uikit/Button'
+import { Card } from '@consta/uikit/Card'
+import { Grid, GridItem } from '@consta/uikit/Grid'
 import { IconAdd } from '@consta/icons/IconAdd'
+import { IconRemove } from '@consta/icons/IconRemove'
 
 import { radarItemSchema } from '@/components/radars/form/item/schema'
 import {
   EditRadarItemFormProps,
   RadarItemFormData,
 } from '@/components/radars/form/item/types'
-import { getRadarsList } from '@/components/radars/form/item/utils'
+import {
+  getRadarsList,
+  transformItemFormData,
+} from '@/components/radars/form/item/utils'
+import { formatSelectData } from '@/components/radars/form/utils'
+import ComboboxFieldController from '@/components/ui/form/ComboboxField/ComboboxFieldController'
 import SelectFieldController from '@/components/ui/form/SelectField/SelectFieldController'
+import { SelectItem } from '@/components/ui/form/SelectField/types'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
-import Stack from '@/components/ui/Stack'
-import { getRadars } from '@/services/radars/radarService'
+import { getRadars, updateRadarItem } from '@/services/radars/radarService'
+import { Radar } from '@/services/radars/types'
 
-const EditRadarItemForm = ({ data }: EditRadarItemFormProps) => {
+const EditRadarItemForm = ({
+  radar,
+  item,
+  addSnackbar,
+}: EditRadarItemFormProps) => {
   const { data: radars } = useQuery({
     queryKey: ['radars'],
     queryFn: () => getRadars(),
-    // select: (data) => getRadarsList(data),
   })
 
   const methods = useForm<RadarItemFormData>({
-    defaultValues: data,
-    values: {
-      ...data,
-      radars: getRadarsList(radars),
-      // radars,
+    defaultValues: {
+      ...item,
+      radars: [
+        {
+          radarId: radar.id,
+          label: radar.name,
+          quadrants: formatSelectData(item.quadrants),
+        },
+      ],
+      quadrants: item.quadrants.map((quadrant) => ({
+        label: quadrant,
+        id: quadrant,
+      })),
     },
     resolver: zodResolver(radarItemSchema),
   })
   const {
+    control,
+    setValue,
+    watch,
     formState: { isSubmitting },
     handleSubmit,
   } = methods
 
-  const formSubmit = async (submitData: RadarItemFormData) => {
-    const transformedData = {
-      ...submitData,
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'radars',
+  })
+
+  const handleRadarChange = (index: number, selectedRadarId?: Radar['id']) => {
+    const selectedRadar = radars?.find((r) => r.id === selectedRadarId)
+    const selectedRadarQuadrants = selectedRadar?.quadrants ?? []
+    const quadrants =
+      radar.id === selectedRadarId ? item.quadrants : selectedRadarQuadrants
+
+    if (selectedRadar && selectedRadarId) {
+      setValue(`radars.${index}.radarId`, selectedRadarId)
+      setValue(`radars.${index}.label`, selectedRadar.name)
+      setValue(`radars.${index}.quadrants`, formatSelectData(quadrants))
     }
+  }
+
+  const formSubmit = async (submitData: RadarItemFormData) => {
+    const transformedData = transformItemFormData(submitData)
 
     try {
       console.log('submit Data', transformedData)
-      // await updateRadarItem({ id: data.id, data: transformedData })
+      await updateRadarItem({ id: item.id, data: transformedData })
+      addSnackbar({ message: 'Элемент успешно обновлен', status: 'success' })
     } catch (e) {
       console.error('Update radar item error', e)
+      addSnackbar({ message: 'Возникла ошибка', status: 'alert' })
     }
   }
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(formSubmit)}>
-        <Stack className="max-w-screen-md">
-          <TextFieldController name="name" label="Имя" />
+        <Grid gap="m">
+          <GridItem>
+            <TextFieldController name="name" label="Имя" />
+          </GridItem>
 
-          <TextFieldController
-            name="description"
-            label="Описание"
-            type="textarea"
-          />
+          <GridItem>
+            <TextFieldController
+              name="description"
+              label="Описание"
+              type="textarea"
+            />
+          </GridItem>
 
-          <TextFieldController name="ring" label="Ринг" />
+          <GridItem>
+            <TextFieldController name="ring" label="Ринг" />
+          </GridItem>
 
-          <SelectFieldController
-            name="radars"
-            label="Радар 1"
-            items={getRadarsList(radars)}
-          />
+          <GridItem>
+            <Grid gap="s">
+              {radars &&
+                fields.map((field, index) => {
+                  const radarId = watch(`radars.${index}.radarId`)
 
-          <SelectFieldController
-            name="quadrants"
-            label="Квадранты радара 1"
-            items={[
-              { id: '1', label: 'Квадрант 1' },
-              { id: '2', label: 'Квадрант 2' },
-              { id: '3', label: 'Квадрант 3' },
-              { id: '4', label: 'Квадрант 4' },
-            ]}
-          />
+                  return (
+                    <GridItem key={field.id}>
+                      <Card verticalSpace="m" horizontalSpace="m">
+                        <SelectFieldController
+                          name={`radars.${index}`}
+                          label={`Радар ${index + 1}`}
+                          items={getRadarsList(radars)}
+                          onChange={(selectedRadar: SelectItem | null) =>
+                            handleRadarChange(index, selectedRadar?.id)
+                          }
+                          className="mb-2"
+                        />
 
-          <Button
-            label="Добавить радар"
-            iconLeft={IconAdd}
-            size="xs"
-            className="mt-4"
-            disabled
-          />
-        </Stack>
+                        <ComboboxFieldController
+                          name={`radars.${index}.quadrants`}
+                          label="Квадранты"
+                          items={formatSelectData(
+                            radars?.find((r) => r.id === radarId)?.quadrants,
+                          )}
+                          isMultiple
+                          className="mb-2"
+                        />
 
-        <div className="mt-4">
-          <Button type="submit" label="Сохранить" disabled={isSubmitting} />
-        </div>
+                        {fields.length > 1 && (
+                          <Button
+                            view="ghost"
+                            iconLeft={IconRemove}
+                            size="xs"
+                            label="Удалить"
+                            onClick={() => remove(index)}
+                          />
+                        )}
+                      </Card>
+                    </GridItem>
+                  )
+                })}
+            </Grid>
+          </GridItem>
+
+          <GridItem>
+            <Button
+              view="clear"
+              label="Добавить радар"
+              iconLeft={IconAdd}
+              size="xs"
+              onClick={() => append({ radarId: '', label: '', quadrants: [] })}
+              disabled={fields.length === radars?.length}
+            />
+          </GridItem>
+
+          <GridItem>
+            <Button type="submit" label="Сохранить" disabled={isSubmitting} />
+          </GridItem>
+        </Grid>
       </form>
     </FormProvider>
   )

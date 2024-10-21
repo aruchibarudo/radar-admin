@@ -10,13 +10,41 @@ import {
 import {
   ItemColumnTitles,
   RadarItemColumn,
+  RadarItemQuadrantsMap,
 } from '@/components/radars/table/types'
+import { RadarItem } from '@/services/radars/types'
+
+export const transformItemId = ({ id, quadrant }: RadarItem) =>
+  `${id}_${quadrant}`
+
+export const transformItems = (items: RadarItem[]) => {
+  return items.map((item) => ({
+    ...item,
+    id: transformItemId(item),
+    action: null,
+  }))
+}
+
+export const getItemQuadrantsMap = (items: RadarItem[]) => {
+  return items.reduce<RadarItemQuadrantsMap>((acc, item) => {
+    if (!acc[item.id]) {
+      acc[item.id] = {
+        ...item,
+        quadrants: [],
+      }
+    }
+
+    acc[item.id].quadrants.push(item.quadrant)
+
+    return acc
+  }, {})
+}
 
 export const getItemColumns = ({
   items,
   setMenuState,
   menuState,
-}: ItemColumnsParams): TableColumn<RadarItemColumn>[] => {
+}: ItemColumnsParams) => {
   if (!items.length) {
     return []
   }
@@ -33,9 +61,10 @@ export const getItemColumns = ({
     title: ItemColumnTitles.actions,
     accessor: 'actions',
     renderCell: (row) => {
+      const rowState = menuState[row.id]
       return (
         <ItemActionsMenu
-          isOpen={menuState[row.id]?.isOpen || false}
+          isOpen={rowState?.isOpen || false}
           onOpen={(e, action) =>
             setMenuState({ data: row, action, isOpen: true })
           }
