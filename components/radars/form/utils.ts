@@ -8,10 +8,11 @@ export const formatFieldsToObjects = (fields: string[]) =>
 export const formatFieldsToArray = (fields: FormField[]) =>
   fields.map(({ value }) => value)
 
+export const formatSelectItem = (label: string) => ({ id: label, label })
 export const formatSelectData = (data: string[] | undefined) => {
   if (!data) {
     return []
   }
 
-  return data.map((label) => ({ id: label, label }))
+  return data.map(formatSelectItem)
 }

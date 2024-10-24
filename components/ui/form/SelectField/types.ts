@@ -7,4 +7,5 @@ export type SelectItem = {
 
 export type SelectFieldControllerProps = {
   name: string
-} & Omit<SelectProps<SelectItem>, 'name'>
+  onChange?: SelectProps<SelectItem>['onChange']
+} & Omit<SelectProps<SelectItem>, 'name' | 'onChange'>

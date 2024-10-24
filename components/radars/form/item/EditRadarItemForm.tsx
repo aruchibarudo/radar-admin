@@ -19,7 +19,10 @@ import {
   getRadarsList,
   transformItemFormData,
 } from '@/components/radars/form/item/utils'
-import { formatSelectData } from '@/components/radars/form/utils'
+import {
+  formatSelectData,
+  formatSelectItem,
+} from '@/components/radars/form/utils'
 import ComboboxFieldController from '@/components/ui/form/ComboboxField/ComboboxFieldController'
 import SelectFieldController from '@/components/ui/form/SelectField/SelectFieldController'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
@@ -40,6 +43,7 @@ const EditRadarItemForm = ({
   const methods = useForm<RadarItemFormData>({
     defaultValues: {
       ...item,
+      ring: formatSelectItem(item.ring),
       radars: [
         {
           radarId: radar.id,
@@ -47,10 +51,6 @@ const EditRadarItemForm = ({
           quadrants: formatSelectData(item.quadrants),
         },
       ],
-      quadrants: item.quadrants.map((quadrant) => ({
-        label: quadrant,
-        id: quadrant,
-      })),
     },
     resolver: zodResolver(radarItemSchema),
   })
@@ -110,7 +110,12 @@ const EditRadarItemForm = ({
           </GridItem>
 
           <GridItem>
-            <TextFieldController name="ring" label="Ринг" />
+            <SelectFieldController
+              name="ring"
+              label="Ринг"
+              items={formatSelectData(radar.rings)}
+              form="round"
+            />
           </GridItem>
 
           <GridItem>

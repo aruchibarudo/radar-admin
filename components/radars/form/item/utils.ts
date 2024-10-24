@@ -11,6 +11,8 @@ export const getRadarsList = (radars: Radar[] | undefined): SelectItem[] => {
 }
 
 export const transformItemFormData = (data: RadarItemFormData) => {
+  const ring = data.ring.label
+
   const radars = data.radars.reduce<RadarItemFormQuadrant[]>((acc, item) => {
     item.quadrants.forEach((quadrant) => {
       acc.push({ id: item.radarId, quadrant: quadrant.label })
@@ -21,6 +23,7 @@ export const transformItemFormData = (data: RadarItemFormData) => {
 
   return {
     ...data,
+    ring,
     radars,
   }
 }
