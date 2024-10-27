@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@consta/uikit/Button'
 import { Table } from '@consta/uikit/Table'
@@ -14,11 +14,7 @@ import {
   RadarItemMenuState,
   RadarItemsProps,
 } from '@/components/radars/table/types'
-import {
-  getItemColumns,
-  getItemQuadrantsMap,
-  transformItems,
-} from '@/components/radars/table/utils'
+import { getItemColumns, transformItems } from '@/components/radars/table/utils'
 import { useModal } from '@/components/ui/modal/hooks'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import { SnackbarAddProps } from '@/components/ui/snackbar/types'
@@ -31,7 +27,6 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
   const [menuState, setMenuState] = useState<ItemMenuState>({})
 
   const { items, ...radar } = data
-  const itemQuadrantsMap = useMemo(() => getItemQuadrantsMap(items), [items])
 
   const handleMenuState = ({
     isOpen,
@@ -52,7 +47,7 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
         content: (
           <EditRadarItemForm
             radar={radar}
-            item={itemQuadrantsMap[baseId]}
+            itemId={baseId}
             addSnackbar={handleSnackbar}
           />
         ),

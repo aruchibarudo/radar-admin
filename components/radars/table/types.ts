@@ -24,6 +24,3 @@ export type RadarItemMenuState = {
   data: RadarItem
   action?: ItemActionType
 }
-
-export type RadarItemQuadrants = RadarItem & { quadrants: string[] }
-export type RadarItemQuadrantsMap = Record<string, RadarItemQuadrants>

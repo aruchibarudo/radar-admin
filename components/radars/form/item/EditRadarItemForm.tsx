@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -19,6 +19,7 @@ import {
   getRadarsList,
   transformItemFormData,
 } from '@/components/radars/form/item/utils'
+import { ItemRadarsMap, RadarsMap } from '@/components/radars/form/types'
 import {
   formatSelectData,
   formatSelectItem,
@@ -27,12 +28,16 @@ import ComboboxFieldController from '@/components/ui/form/ComboboxField/Combobox
 import SelectFieldController from '@/components/ui/form/SelectField/SelectFieldController'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
-import { getRadars, updateRadarItem } from '@/services/radars/radarService'
+import {
+  getRadarItem,
+  getRadars,
+  updateRadarItem,
+} from '@/services/radars/radarService'
 import { Radar } from '@/services/radars/types'
 
 const EditRadarItemForm = ({
   radar,
-  item,
+  itemId,
   addSnackbar,
 }: EditRadarItemFormProps) => {
   const { data: radars } = useQuery({
@@ -40,24 +45,20 @@ const EditRadarItemForm = ({
     queryFn: () => getRadars(),
   })
 
+  const { data: item } = useQuery({
+    queryKey: ['item', itemId],
+    queryFn: () => getRadarItem({ id: itemId }),
+  })
+  const [itemRadars, setItemRadars] = useState<ItemRadarsMap>({})
+
   const methods = useForm<RadarItemFormData>({
-    defaultValues: {
-      ...item,
-      ring: formatSelectItem(item.ring),
-      radars: [
-        {
-          radarId: radar.id,
-          label: radar.name,
-          quadrants: formatSelectData(item.quadrants),
-        },
-      ],
-    },
     resolver: zodResolver(radarItemSchema),
   })
   const {
     control,
     setValue,
     watch,
+    reset,
     formState: { isSubmitting },
     handleSubmit,
   } = methods
@@ -67,11 +68,53 @@ const EditRadarItemForm = ({
     name: 'radars',
   })
 
+  useEffect(() => {
+    if (!radars || !item) {
+      return
+    }
+
+    const radarsMap = radars.reduce<RadarsMap>((acc, r) => {
+      acc[r.id] = r
+
+      return acc
+    }, {})
+
+    const itemRadarsMap = item.radars.reduce<ItemRadarsMap>(
+      (acc, { id, quadrant }) => {
+        acc[id] = acc[id] || { quadrants: [] }
+        acc[id].quadrants.push(quadrant)
+
+        return acc
+      },
+      {},
+    )
+
+    setItemRadars(itemRadarsMap)
+
+    const transformedItemRadars = Object.keys(itemRadarsMap).map((radarId) => {
+      return {
+        radarId,
+        label: radarsMap[radarId].name,
+        quadrants: formatSelectData(itemRadarsMap[radarId].quadrants),
+      }
+    })
+
+    reset({
+      ...item,
+      ring: formatSelectItem(item.ring),
+      radars: transformedItemRadars,
+    })
+  }, [item, radars, reset])
+
   const handleRadarChange = (index: number, selectedRadarId?: Radar['id']) => {
-    const selectedRadar = radars?.find((r) => r.id === selectedRadarId)
-    const selectedRadarQuadrants = selectedRadar?.quadrants ?? []
-    const quadrants =
-      radar.id === selectedRadarId ? item.quadrants : selectedRadarQuadrants
+    if (!selectedRadarId || !radars) {
+      return
+    }
+
+    const selectedRadar = radars.find((r) => r.id === selectedRadarId)
+    const activeQuadrants = itemRadars[selectedRadarId]?.quadrants
+    const allQuadrants = selectedRadar?.quadrants ?? []
+    const quadrants = activeQuadrants ?? allQuadrants
 
     if (selectedRadar && selectedRadarId) {
       setValue(`radars.${index}.radarId`, selectedRadarId)
@@ -85,7 +128,7 @@ const EditRadarItemForm = ({
 
     try {
       console.log('submit Data', transformedData)
-      await updateRadarItem({ id: item.id, data: transformedData })
+      await updateRadarItem({ id: itemId, data: transformedData })
       addSnackbar({ message: 'Элемент успешно обновлен', status: 'success' })
     } catch (e) {
       console.error('Update radar item error', e)

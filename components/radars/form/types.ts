@@ -11,3 +11,7 @@ export type EditRadarFormProps = {
 export type RadarFormData = z.infer<typeof radarSchema>
 
 export type FormField = { value: string }
+
+export type RadarsMap = Record<Radar['id'], Radar>
+
+export type ItemRadarsMap = Record<Radar['id'], Pick<Radar, 'quadrants'>>

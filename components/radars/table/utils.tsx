@@ -10,7 +10,6 @@ import {
 import {
   ItemColumnTitles,
   RadarItemColumn,
-  RadarItemQuadrantsMap,
 } from '@/components/radars/table/types'
 import { RadarItem } from '@/services/radars/types'
 
@@ -23,21 +22,6 @@ export const transformItems = (items: RadarItem[]) => {
     id: transformItemId(item),
     action: null,
   }))
-}
-
-export const getItemQuadrantsMap = (items: RadarItem[]) => {
-  return items.reduce<RadarItemQuadrantsMap>((acc, item) => {
-    if (!acc[item.id]) {
-      acc[item.id] = {
-        ...item,
-        quadrants: [],
-      }
-    }
-
-    acc[item.id].quadrants.push(item.quadrant)
-
-    return acc
-  }, {})
 }
 
 export const getItemColumns = ({
