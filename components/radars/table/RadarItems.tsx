@@ -17,10 +17,10 @@ import {
 } from '@/components/radars/table/types'
 import { getItemColumns, transformItems } from '@/components/radars/table/utils'
 import { getRadarItemId } from '@/components/radars/utils'
+import Stack from '@/components/ui/container/Stack'
 import { useModal } from '@/components/ui/modal/hooks'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import { SnackbarAddProps } from '@/components/ui/snackbar/types'
-import Stack from '@/components/ui/Stack'
 import { H2 } from '@/components/ui/Text'
 import { deleteRadarItem } from '@/services/radars/radarService'
 import { RadarItem } from '@/services/radars/types'
@@ -112,7 +112,7 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
       {items.length ? (
         <Table rows={transformItems(items)} columns={columns} />
       ) : (
-        <Stack direction="row" className="items-center">
+        <Stack direction="row" alignItems="center">
           <Text as="p">Элементы отсутствуют</Text>
           <Button label="Добавить" view="clear" iconLeft={IconAdd} />
         </Stack>

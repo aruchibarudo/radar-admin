@@ -17,9 +17,9 @@ import {
   formatFieldsToObjects,
 } from '@/components/radars/form/utils'
 import RadarItems from '@/components/radars/table/RadarItems'
+import Stack from '@/components/ui/container/Stack'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
-import Stack from '@/components/ui/Stack'
 import { updateRadar } from '@/services/radars/radarService'
 
 const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {

@@ -9,8 +9,8 @@ import { IconClose } from '@consta/icons/IconClose'
 
 import { RadarFormData } from '@/components/radars/form/types'
 import { MAX_RINGS } from '@/components/radars/form/utils'
+import Stack from '@/components/ui/container/Stack'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
-import Stack from '@/components/ui/Stack'
 import { H3 } from '@/components/ui/Text'
 
 type RingFieldsProps = {
