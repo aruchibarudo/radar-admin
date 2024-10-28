@@ -1,7 +1,5 @@
 import z from 'zod'
 
-import { RadarItemProbationResult } from '@/services/radars/types'
-
 export const radarItemSchema = z.object({
   name: z.string().min(4),
   description: z.string().min(4),
@@ -10,7 +8,7 @@ export const radarItemSchema = z.object({
     label: z.string(),
   }),
   ru: z.boolean(),
-  probation_result: z.nativeEnum(RadarItemProbationResult),
+  ftt_matches: z.boolean(),
   radars: z
     .object({
       radarId: z.string(),

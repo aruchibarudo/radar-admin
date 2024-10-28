@@ -21,12 +21,14 @@ import {
 } from '@/components/radars/form/item/utils'
 import { ItemRadarsMap, RadarsMap } from '@/components/radars/form/types'
 import {
+  formatProbationResult,
   formatSelectData,
   formatSelectItem,
 } from '@/components/radars/form/utils'
 import ComboboxFieldController from '@/components/ui/form/ComboboxField/ComboboxFieldController'
 import SelectFieldController from '@/components/ui/form/SelectField/SelectFieldController'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
+import SwitchFieldController from '@/components/ui/form/SwitchField/SwitchFieldController'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import {
   getRadarItem,
@@ -99,9 +101,11 @@ const EditRadarItemForm = ({
       }
     })
 
+    const { probation_result } = item
     reset({
       ...item,
       ring: formatSelectItem(item.ring),
+      ftt_matches: formatProbationResult(probation_result),
       radars: transformedItemRadars,
     })
   }, [item, radars, reset])
@@ -158,6 +162,17 @@ const EditRadarItemForm = ({
               label="Ринг"
               items={formatSelectData(radar.rings)}
               form="round"
+            />
+          </GridItem>
+
+          <GridItem>
+            <SwitchFieldController name="ru" label="Отечественное решение" />
+          </GridItem>
+
+          <GridItem>
+            <SwitchFieldController
+              name="ftt_matches"
+              label="Соответствует ФТТ"
             />
           </GridItem>
 
