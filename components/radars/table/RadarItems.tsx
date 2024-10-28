@@ -6,6 +6,7 @@ import { Text } from '@consta/uikit/Text'
 import { IconAdd } from '@consta/icons/IconAdd'
 
 import EditRadarItemForm from '@/components/radars/form/item/EditRadarItemForm'
+import DeleteRadarItem from '@/components/radars/table/actions/delete/DeleteRadarItem'
 import {
   ItemActionType,
   ItemMenuState,
@@ -15,11 +16,14 @@ import {
   RadarItemsProps,
 } from '@/components/radars/table/types'
 import { getItemColumns, transformItems } from '@/components/radars/table/utils'
+import { getRadarItemId } from '@/components/radars/utils'
 import { useModal } from '@/components/ui/modal/hooks'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import { SnackbarAddProps } from '@/components/ui/snackbar/types'
 import Stack from '@/components/ui/Stack'
 import { H2 } from '@/components/ui/Text'
+import { deleteRadarItem } from '@/services/radars/radarService'
+import { RadarItem } from '@/services/radars/types'
 
 const RadarItems = ({ data, refetch }: RadarItemsProps) => {
   const { addSnackbar } = useSnackbar()
@@ -28,18 +32,36 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
 
   const { items, ...radar } = data
 
+  const handleDeleteItem = async ({ id }: Pick<RadarItem, 'id'>) => {
+    try {
+      await deleteRadarItem({ id })
+      await refetch()
+
+      addSnackbar({ message: 'Элемент успешно удален', status: 'success' })
+    } catch (e) {
+      console.log('delete item:', e)
+
+      addSnackbar({
+        message: 'Возникла ошибка при удалении элемента',
+        status: 'alert',
+      })
+    } finally {
+      closeModal()
+    }
+  }
+
   const handleMenuState = ({
     isOpen,
     action,
     data: item,
   }: RadarItemMenuState) => {
     const itemId = item.id
+    const baseItemId = getRadarItemId(itemId)
+
     setMenuState((prevState) => ({
       ...prevState,
       [itemId]: { ...prevState[itemId], isOpen, action, data: item },
     }))
-
-    const [baseId] = itemId.split('_')
 
     if (action === ItemActionType.Edit) {
       setModal({
@@ -47,7 +69,7 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
         content: (
           <EditRadarItemForm
             radar={radar}
-            itemId={baseId}
+            itemId={baseItemId}
             addSnackbar={handleSnackbar}
           />
         ),
@@ -57,7 +79,13 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
     if (action === ItemActionType.Remove) {
       setModal({
         title: 'Удалить элемент',
-        content: `Вы действительно хотите удалить ${data.name}?`,
+        content: (
+          <DeleteRadarItem
+            item={item}
+            onDelete={() => handleDeleteItem({ id: baseItemId })}
+            onClose={closeModal}
+          />
+        ),
       })
     }
   }

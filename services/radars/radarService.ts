@@ -26,3 +26,7 @@ export const updateRadar = ({ id, data }: UpdateRadarParams) => {
 export const updateRadarItem = ({ id, data }: UpdateRadarItemParams) => {
   return ApiService.put<RadarItem>(`/item/${id}`, { body: data })
 }
+
+export const deleteRadarItem = ({ id }: Pick<RadarItem, 'id'>) => {
+  return ApiService.delete<RadarItem>(`/item/${id}`)
+}

@@ -17,3 +17,7 @@ a {
   max-width: 1200px;
   margin: 0 auto;
 }
+
+.Theme .Modal-Window {
+  min-height: initial;
+}
