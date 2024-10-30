@@ -1,4 +1,4 @@
-import { RefObject } from 'react'
+import React, { RefObject } from 'react'
 
 import { IconComponent } from '@consta/icons/Icon'
 
@@ -16,16 +16,14 @@ export type ItemAction = {
   icon: IconComponent<'span'>
 }
 
+type ItemActionHandler = (
+  e: React.MouseEvent<Element> | MouseEvent,
+  action?: ItemActionType,
+) => void
 export type ItemActionsMenuProps = {
   isOpen: boolean
-  onOpen: (
-    e: React.MouseEvent<Element> | MouseEvent,
-    action?: ItemActionType,
-  ) => void
-  onClose: (
-    e: React.MouseEvent<Element> | MouseEvent,
-    action?: ItemActionType,
-  ) => void
+  onOpen: ItemActionHandler
+  onClose: ItemActionHandler
   actionItems: ItemAction[]
 }
 

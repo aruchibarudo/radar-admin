@@ -1,4 +1,11 @@
-import { RadarItemFormData } from '@/components/radars/form/item/types'
+import {
+  ItemRadarsFormData,
+  RadarItemFormData,
+} from '@/components/radars/form/item/types'
+import {
+  formatProbationResult,
+  formatSelectItem,
+} from '@/components/radars/form/utils'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
 import {
   Radar,
@@ -12,6 +19,25 @@ export const getRadarsList = (radars: Radar[] | undefined): SelectItem[] => {
   }
 
   return radars.map(({ id, name }) => ({ id, label: name }))
+}
+
+export const formatItemRadar = ({
+  radarId,
+  label,
+  quadrants,
+}: ItemRadarsFormData) => ({
+  radarId,
+  label,
+  quadrants,
+})
+
+export const defaultItemFormData = {
+  name: '',
+  description: '',
+  ru: false,
+  ring: formatSelectItem(''),
+  ftt_matches: formatProbationResult(RadarItemProbationResult.FttNotMatches),
+  radars: [formatItemRadar({ radarId: '', label: '', quadrants: [] })],
 }
 
 export const transformItemFormData = (data: RadarItemFormData) => {

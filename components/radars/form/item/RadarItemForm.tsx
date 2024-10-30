@@ -16,6 +16,8 @@ import {
   RadarItemFormData,
 } from '@/components/radars/form/item/types'
 import {
+  defaultItemFormData as defaultValues,
+  formatItemRadar,
   getRadarsList,
   transformItemFormData,
 } from '@/components/radars/form/item/utils'
@@ -31,13 +33,14 @@ import { SelectItem } from '@/components/ui/form/SelectField/types'
 import SwitchFieldController from '@/components/ui/form/SwitchField/SwitchFieldController'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import {
+  createRadarItem,
   getRadarItem,
   getRadars,
   updateRadarItem,
 } from '@/services/radars/radarService'
 import { Radar } from '@/services/radars/types'
 
-const EditRadarItemForm = ({
+const RadarItemForm = ({
   radar,
   itemId,
   addSnackbar,
@@ -49,12 +52,14 @@ const EditRadarItemForm = ({
 
   const { data: item } = useQuery({
     queryKey: ['item', itemId],
-    queryFn: () => getRadarItem({ id: itemId }),
+    queryFn: () => getRadarItem({ id: itemId! }),
+    enabled: !!itemId,
   })
   const [itemRadars, setItemRadars] = useState<ItemRadarsMap>({})
 
   const methods = useForm<RadarItemFormData>({
     resolver: zodResolver(radarItemSchema),
+    defaultValues,
   })
   const {
     control,
@@ -93,20 +98,20 @@ const EditRadarItemForm = ({
 
     setItemRadars(itemRadarsMap)
 
-    const transformedItemRadars = Object.keys(itemRadarsMap).map((radarId) => {
-      return {
+    const formattedItemRadars = Object.keys(itemRadarsMap).map((radarId) =>
+      formatItemRadar({
         radarId,
         label: radarsMap[radarId].name,
         quadrants: formatSelectData(itemRadarsMap[radarId].quadrants),
-      }
-    })
+      }),
+    )
 
     const { probation_result } = item
     reset({
       ...item,
       ring: formatSelectItem(item.ring),
       ftt_matches: formatProbationResult(probation_result),
-      radars: transformedItemRadars,
+      radars: formattedItemRadars,
     })
   }, [item, radars, reset])
 
@@ -129,13 +134,17 @@ const EditRadarItemForm = ({
 
   const formSubmit = async (submitData: RadarItemFormData) => {
     const transformedData = transformItemFormData(submitData)
-
     try {
-      console.log('submit Data', transformedData)
-      await updateRadarItem({ id: itemId, data: transformedData })
-      addSnackbar({ message: 'Элемент успешно обновлен', status: 'success' })
+      if (itemId) {
+        await updateRadarItem({ id: itemId, data: transformedData })
+        addSnackbar({ message: 'Элемент успешно обновлен', status: 'success' })
+      } else {
+        // probably we need bulk creation here
+        await createRadarItem({ id: radar.id, data: transformedData })
+        addSnackbar({ message: 'Элемент успешно создан', status: 'success' })
+      }
     } catch (e) {
-      console.error('Update radar item error', e)
+      console.error('Ошибка:', e)
       addSnackbar({ message: 'Возникла ошибка', status: 'alert' })
     }
   }
@@ -233,7 +242,11 @@ const EditRadarItemForm = ({
           </GridItem>
 
           <GridItem>
-            <Button type="submit" label="Сохранить" disabled={isSubmitting} />
+            <Button
+              type="submit"
+              label={itemId ? 'Сохранить' : 'Создать'}
+              disabled={isSubmitting}
+            />
           </GridItem>
         </Grid>
       </form>
@@ -241,4 +254,4 @@ const EditRadarItemForm = ({
   )
 }
 
-export default EditRadarItemForm
+export default RadarItemForm

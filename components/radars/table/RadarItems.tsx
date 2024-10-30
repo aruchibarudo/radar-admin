@@ -5,7 +5,7 @@ import { Table } from '@consta/uikit/Table'
 import { Text } from '@consta/uikit/Text'
 import { IconAdd } from '@consta/icons/IconAdd'
 
-import EditRadarItemForm from '@/components/radars/form/item/EditRadarItemForm'
+import RadarItemForm from '@/components/radars/form/item/RadarItemForm'
 import DeleteRadarItem from '@/components/radars/table/actions/delete/DeleteRadarItem'
 import {
   ItemActionType,
@@ -67,7 +67,7 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
       setModal({
         title: 'Редактирование элемента радара',
         content: (
-          <EditRadarItemForm
+          <RadarItemForm
             radar={radar}
             itemId={baseItemId}
             addSnackbar={handleSnackbar}
@@ -96,6 +96,13 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
     await refetch()
   }
 
+  const handleAddItem = () => {
+    setModal({
+      title: 'Добавление элемента радара',
+      content: <RadarItemForm radar={radar} addSnackbar={handleSnackbar} />,
+    })
+  }
+
   useEffect(() => {
     console.log('menuState', menuState)
   }, [menuState])
@@ -108,14 +115,19 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
 
   return (
     <>
-      <H2>Элементы радара</H2>
+      <Stack direction="row" alignItems="center">
+        <H2>Элементы радара</H2>
+        <Button
+          label="Добавить"
+          view="clear"
+          iconLeft={IconAdd}
+          onClick={handleAddItem}
+        />
+      </Stack>
       {items.length ? (
         <Table rows={transformItems(items)} columns={columns} />
       ) : (
-        <Stack direction="row" alignItems="center">
-          <Text as="p">Элементы отсутствуют</Text>
-          <Button label="Добавить" view="clear" iconLeft={IconAdd} />
-        </Stack>
+        <Text as="p">Элементы отсутствуют</Text>
       )}
     </>
   )
