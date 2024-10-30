@@ -2,7 +2,10 @@ import React, { RefObject } from 'react'
 
 import { IconComponent } from '@consta/icons/Icon'
 
-import { RadarItemMenuState } from '@/components/radars/table/types'
+import {
+  RadarItemColumn,
+  RadarItemMenuState,
+} from '@/components/radars/table/types'
 import { RadarItem } from '@/services/radars/types'
 
 export enum ItemActionType {
@@ -37,6 +40,6 @@ export type ItemMenuState = {
   [key: string]: {
     isOpen: boolean
     ref: RefObject<HTMLButtonElement>
-    data: RadarItem
+    data: RadarItemColumn
   }
 }

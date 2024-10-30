@@ -1,7 +1,7 @@
-import { RadarItem } from '@/services/radars/types'
+import { RadarItemColumn } from '@/components/radars/table/types'
 
 export type DeleteRadarItemProps = {
-  item: RadarItem
+  item: RadarItemColumn
   onClose: () => void
   onDelete: () => void
 }

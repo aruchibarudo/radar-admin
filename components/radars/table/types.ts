@@ -7,20 +7,26 @@ export enum ItemColumnTitles {
   name = 'Имя',
   description = 'Описание',
   ring = 'Ринг',
-  ru = 'Российский продукт',
+  ru = 'Отечественное решение',
   probation_result = 'Результат тестирования',
   quadrant = 'Квадрант',
   actions = 'Действие',
 }
 
-export type RadarItemColumn = RadarItem & { actions?: string }
+export type RadarItemColumn = Omit<RadarItem, 'ru' | 'probation_result'> & {
+  actions?: string
+  ru: string
+  probation_result: string
+}
 
 export type RadarItemsProps = {
-  data: Radar
+  data: Omit<Radar, 'items'> & {
+    items: RadarItem[]
+  }
 } & Refetch
 
 export type RadarItemMenuState = {
   isOpen: boolean
-  data: RadarItem
+  data: RadarItemColumn
   action?: ItemActionType
 }

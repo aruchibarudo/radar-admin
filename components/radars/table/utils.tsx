@@ -11,15 +11,20 @@ import {
   ItemColumnTitles,
   RadarItemColumn,
 } from '@/components/radars/table/types'
-import { RadarItem } from '@/services/radars/types'
+import { RadarItem, RadarItemProbationResult } from '@/services/radars/types'
 
 export const transformItemId = ({ id, quadrant }: RadarItem) =>
   `${id}_${quadrant}`
 
-export const transformItems = (items: RadarItem[]) => {
+export const transformItems = (items: RadarItem[]): RadarItemColumn[] => {
   return items.map((item) => ({
     ...item,
     id: transformItemId(item),
+    ru: item.ru ? 'Да' : 'Нет',
+    probation_result:
+      item.probation_result === RadarItemProbationResult.FttMatches
+        ? 'Соответствует ФТТ'
+        : 'Не соответствует ФТТ',
     action: null,
   }))
 }
