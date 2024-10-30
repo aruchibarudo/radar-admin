@@ -1,3 +1,5 @@
+import { useRouter } from 'next/navigation'
+
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,25 +15,22 @@ import {
   RadarFormData,
 } from '@/components/radars/form/types'
 import {
-  formatFieldsToArray,
-  formatFieldsToObjects,
+  getDefaultRadarFormData,
+  transformRadarFormData,
 } from '@/components/radars/form/utils'
 import RadarItems from '@/components/radars/table/RadarItems'
 import Stack from '@/components/ui/container/Stack'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
-import { updateRadar } from '@/services/radars/radarService'
+import { createRadar, updateRadar } from '@/services/radars/radarService'
 
-const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {
+const RadarForm = ({ data, refetch }: EditRadarFormProps) => {
+  const router = useRouter()
   const [isFormVisible, setIsFormVisible] = useState(true)
   const { addSnackbar } = useSnackbar()
 
   const methods = useForm<RadarFormData>({
-    defaultValues: {
-      ...data,
-      rings: formatFieldsToObjects(data.rings),
-      quadrants: formatFieldsToObjects(data.quadrants),
-    },
+    defaultValues: getDefaultRadarFormData(data),
     resolver: zodResolver(radarSchema),
   })
   const {
@@ -41,17 +40,19 @@ const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {
   } = methods
 
   const formSubmit = async (submitData: RadarFormData) => {
-    const transformedData = {
-      ...submitData,
-      rings: formatFieldsToArray(submitData.rings),
-      quadrants: formatFieldsToArray(submitData.quadrants),
-    }
+    const transformedData = transformRadarFormData(submitData)
 
     try {
-      await updateRadar({ id: data.id, data: transformedData })
-      addSnackbar({ message: 'Радар успешно обновлен', status: 'success' })
+      if (data) {
+        await updateRadar({ id: data.id, data: transformedData })
+        addSnackbar({ message: 'Радар успешно обновлен', status: 'success' })
+      } else {
+        const newRadar = await createRadar({ data: transformedData })
+        addSnackbar({ message: 'Радар успешно создан', status: 'success' })
+        router.push(`/radars/${newRadar.id}`)
+      }
     } catch (e) {
-      console.error('Update radar error', e)
+      console.error('Form Error', e)
       addSnackbar({ message: 'Возникла ошибка', status: 'alert' })
     }
   }
@@ -61,6 +62,7 @@ const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {
   }
 
   const switchLabel = isFormVisible ? 'Развернуть' : 'Свернуть'
+  const submitLabel = data ? 'Сохранить' : 'Создать'
 
   return (
     <Stack>
@@ -84,15 +86,19 @@ const EditRadarForm = ({ data, refetch }: EditRadarFormProps) => {
             </Stack>
 
             <div className="mt-4">
-              <Button type="submit" label="Сохранить" disabled={isSubmitting} />
+              <Button
+                type="submit"
+                label={submitLabel}
+                disabled={isSubmitting}
+              />
             </div>
           </form>
         </FormProvider>
       )}
 
-      <RadarItems data={data} refetch={refetch} />
+      {data && refetch ? <RadarItems data={data} refetch={refetch} /> : null}
     </Stack>
   )
 }
 
-export default EditRadarForm
+export default RadarForm

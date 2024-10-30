@@ -25,7 +25,8 @@ export type Radar = {
 export type ItemRadar = Pick<Radar, 'id'> & Pick<RadarItem, 'quadrant'>
 export type Item = Omit<RadarItem, 'quadrant'> & { radars: ItemRadar[] }
 
-export type UpdateRadarParams = Pick<Radar, 'id'> & {
+export type UpdateRadarParams = {
+  id?: Radar['id']
   data: Omit<Radar, 'id' | 'items'>
 }
 

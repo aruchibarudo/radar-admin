@@ -19,6 +19,10 @@ export const getRadarItem = ({ id }: Pick<RadarItem, 'id'>) => {
   return ApiService.get<Item>(`/item/${id}`)
 }
 
+export const createRadar = ({ data }: UpdateRadarParams) => {
+  return ApiService.post<Radar>('/radar', { body: data })
+}
+
 export const updateRadar = ({ id, data }: UpdateRadarParams) => {
   return ApiService.post<Radar>(`/radar/${id}`, { body: data })
 }

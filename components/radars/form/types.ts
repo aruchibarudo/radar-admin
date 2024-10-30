@@ -5,8 +5,9 @@ import { Radar } from '@/services/radars/types'
 import { Refetch } from '@/types/useQuery'
 
 export type EditRadarFormProps = {
-  data: Radar
-} & Refetch
+  data?: Radar
+  refetch?: Refetch['refetch']
+}
 
 export type RadarFormData = z.infer<typeof radarSchema>
 

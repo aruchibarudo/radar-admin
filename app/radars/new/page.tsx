@@ -1,34 +1,15 @@
 'use client'
 import Link from 'next/link'
 
-import { useQuery } from '@tanstack/react-query'
-
 import { Breadcrumbs } from '@consta/uikit/Breadcrumbs'
 import { Grid, GridItem } from '@consta/uikit/Grid'
-import { Loader } from '@consta/uikit/Loader'
 import { IconEdit } from '@consta/icons/IconEdit'
 import { IconHome } from '@consta/icons/IconHome'
 
 import RadarForm from '@/components/radars/form/RadarForm'
-import ErrorInformer from '@/components/system/ErrorInformer'
 import { H1 } from '@/components/ui/Text'
-import { getRadar } from '@/services/radars/radarService'
-import { PageParams } from '@/types/nextParams'
 
-const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
-  const { isPending, error, data, refetch } = useQuery({
-    queryKey: ['radar', id],
-    queryFn: () => getRadar({ id }),
-  })
-
-  if (isPending) {
-    return <Loader />
-  }
-
-  if (error) {
-    return <ErrorInformer error={error} />
-  }
-
+const CreateRadarPage = () => {
   return (
     <Grid gap="m">
       <GridItem>
@@ -41,18 +22,18 @@ const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
             },
             {
               icon: IconEdit,
-              label: data.name,
-              href: '/',
+              label: 'Новый радар',
             },
           ]}
         />
       </GridItem>
+
       <GridItem>
-        <H1>Редактирование радара</H1>
+        <H1>Создание радара</H1>
       </GridItem>
 
       <GridItem>
-        <RadarForm data={data} refetch={refetch} />
+        <RadarForm />
       </GridItem>
 
       <GridItem>
@@ -62,4 +43,4 @@ const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
   )
 }
 
-export default RadarPage
+export default CreateRadarPage

@@ -2,13 +2,17 @@ import React from 'react'
 import { Control, FieldErrors, useFieldArray } from 'react-hook-form'
 
 import { Button } from '@consta/uikit/Button'
+import { Card } from '@consta/uikit/Card'
 import { Grid, GridItem } from '@consta/uikit/Grid'
 import { Text } from '@consta/uikit/Text'
 import { IconAdd } from '@consta/icons/IconAdd'
 import { IconClose } from '@consta/icons/IconClose'
 
 import { RadarFormData } from '@/components/radars/form/types'
-import { MAX_QUADRANTS } from '@/components/radars/form/utils'
+import {
+  getFormErrorMessage,
+  MAX_QUADRANTS,
+} from '@/components/radars/form/utils'
 import Stack from '@/components/ui/container/Stack'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { H3 } from '@/components/ui/Text'
@@ -24,8 +28,10 @@ const QuadrantFields = ({ control, errors }: QuadrantFieldsProps) => {
     name: 'quadrants',
   })
 
+  const errorMessage = getFormErrorMessage<RadarFormData>(errors)
+
   return (
-    <div>
+    <Card verticalSpace="m" horizontalSpace="m">
       <H3>Квадранты</H3>
       <Grid
         gap="m"
@@ -67,12 +73,12 @@ const QuadrantFields = ({ control, errors }: QuadrantFieldsProps) => {
         disabled={fields.length >= MAX_QUADRANTS}
       />
 
-      {errors?.root && (
+      {errorMessage && (
         <Text view="alert" className="mt-2">
-          Ошибка: {errors.root.message}
+          {`${errorMessage}`}
         </Text>
       )}
-    </div>
+    </Card>
   )
 }
 
