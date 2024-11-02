@@ -25,10 +25,12 @@ export const formatItemRadar = ({
   radarId,
   label,
   quadrants,
+  ringExists,
 }: ItemRadarsFormData) => ({
   radarId,
   label,
   quadrants,
+  ringExists,
 })
 
 export const defaultItemFormData = {
@@ -37,7 +39,14 @@ export const defaultItemFormData = {
   ru: false,
   ring: formatSelectItem(''),
   ftt_matches: formatProbationResult(RadarItemProbationResult.FttNotMatches),
-  radars: [formatItemRadar({ radarId: '', label: '', quadrants: [] })],
+  radars: [
+    formatItemRadar({
+      radarId: '',
+      label: '',
+      quadrants: [],
+      ringExists: false,
+    }),
+  ],
 }
 
 export const transformItemFormData = (data: RadarItemFormData) => {

@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from '@consta/uikit/Button'
 import { Card } from '@consta/uikit/Card'
 import { Grid, GridItem } from '@consta/uikit/Grid'
+import { Text } from '@consta/uikit/Text'
 import { IconAdd } from '@consta/icons/IconAdd'
 import { IconRemove } from '@consta/icons/IconRemove'
 
@@ -64,9 +65,10 @@ const RadarItemForm = ({
   const {
     control,
     setValue,
+    clearErrors,
     watch,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     handleSubmit,
   } = methods
 
@@ -103,6 +105,7 @@ const RadarItemForm = ({
         radarId,
         label: radarsMap[radarId].name,
         quadrants: formatSelectData(itemRadarsMap[radarId].quadrants),
+        ringExists: radarsMap[radarId].rings.includes(item.ring),
       }),
     )
 
@@ -115,6 +118,8 @@ const RadarItemForm = ({
     })
   }, [item, radars, reset])
 
+  const selectedRing = watch('ring')
+
   const handleRadarChange = (index: number, selectedRadarId?: Radar['id']) => {
     if (!selectedRadarId || !radars) {
       return
@@ -125,10 +130,16 @@ const RadarItemForm = ({
     const allQuadrants = selectedRadar?.quadrants ?? []
     const quadrants = activeQuadrants ?? allQuadrants
 
+    const ringExists = Boolean(
+      selectedRadar?.rings.includes(selectedRing.label),
+    )
+    clearErrors(`radars.${index}.ringExists`)
+
     if (selectedRadar && selectedRadarId) {
       setValue(`radars.${index}.radarId`, selectedRadarId)
       setValue(`radars.${index}.label`, selectedRadar.name)
       setValue(`radars.${index}.quadrants`, formatSelectData(quadrants))
+      setValue(`radars.${index}.ringExists`, ringExists)
     }
   }
 
@@ -190,6 +201,10 @@ const RadarItemForm = ({
               {radars &&
                 fields.map((field, index) => {
                   const radarId = watch(`radars.${index}.radarId`)
+                  const ringExistsError =
+                    selectedRing.label &&
+                    radarId &&
+                    errors.radars?.[index]?.ringExists
 
                   return (
                     <GridItem key={field.id}>
@@ -203,6 +218,13 @@ const RadarItemForm = ({
                           }
                           className="mb-2"
                         />
+
+                        {ringExistsError && (
+                          <Text view="alert">
+                            Ринг &quot;{selectedRing.label}&quot; отсутствует в
+                            данном радаре
+                          </Text>
+                        )}
 
                         <ComboboxFieldController
                           name={`radars.${index}.quadrants`}
@@ -236,7 +258,14 @@ const RadarItemForm = ({
               label="Добавить радар"
               iconLeft={IconAdd}
               size="xs"
-              onClick={() => append({ radarId: '', label: '', quadrants: [] })}
+              onClick={() =>
+                append({
+                  radarId: '',
+                  label: '',
+                  quadrants: [],
+                  ringExists: true,
+                })
+              }
               disabled={fields.length === radars?.length}
             />
           </GridItem>

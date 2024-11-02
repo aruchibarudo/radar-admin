@@ -18,4 +18,5 @@ export type ItemRadarsFormData = {
   radarId: Radar['id']
   label: string
   quadrants: SelectItem[]
+  ringExists: boolean
 }

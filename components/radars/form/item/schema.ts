@@ -13,6 +13,7 @@ export const radarItemSchema = z.object({
     .object({
       radarId: z.string(),
       label: z.string().trim().min(1),
+      ringExists: z.literal<boolean>(true),
       quadrants: z
         .object({
           id: z.string(),
