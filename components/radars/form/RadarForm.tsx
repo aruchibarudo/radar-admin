@@ -1,7 +1,8 @@
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 
-import { useState } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import React, { useState } from 'react'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@consta/uikit/Button'
@@ -18,13 +19,19 @@ import {
   getDefaultRadarFormData,
   transformRadarFormData,
 } from '@/components/radars/form/utils'
-import RadarItems from '@/components/radars/table/RadarItems'
 import Stack from '@/components/ui/container/Stack'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import { createRadar, updateRadar } from '@/services/radars/radarService'
 
-const RadarForm = ({ data, refetch }: EditRadarFormProps) => {
+const DynamicQuillEditor = dynamic(
+  () => import('@/components/ui/form/QuillEditor/QuillEditor'),
+  {
+    ssr: false,
+  },
+)
+
+const RadarForm = ({ data }: EditRadarFormProps) => {
   const router = useRouter()
   const [isFormVisible, setIsFormVisible] = useState(true)
   const { addSnackbar } = useSnackbar()
@@ -39,8 +46,13 @@ const RadarForm = ({ data, refetch }: EditRadarFormProps) => {
     handleSubmit,
   } = methods
 
+  const [description, setDescription] = useState(data?.description ?? '')
+
   const formSubmit = async (submitData: RadarFormData) => {
-    const transformedData = transformRadarFormData(submitData)
+    const transformedData = transformRadarFormData({
+      ...submitData,
+      description,
+    })
 
     try {
       if (data) {
@@ -78,7 +90,19 @@ const RadarForm = ({ data, refetch }: EditRadarFormProps) => {
             <Stack className="max-w-screen-md">
               <TextFieldController name="name" label="Имя" />
 
-              <TextFieldController name="description" label="Описание" />
+              <div>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field: { value } }) => (
+                    <DynamicQuillEditor
+                      onChange={setDescription}
+                      value={value}
+                      label="Описание"
+                    />
+                  )}
+                />
+              </div>
 
               <RingFields control={control} errors={errors.rings} />
 
@@ -95,8 +119,6 @@ const RadarForm = ({ data, refetch }: EditRadarFormProps) => {
           </form>
         </FormProvider>
       )}
-
-      {data && refetch ? <RadarItems data={data} refetch={refetch} /> : null}
     </Stack>
   )
 }

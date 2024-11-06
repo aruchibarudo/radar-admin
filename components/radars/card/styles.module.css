@@ -1,0 +1,10 @@
+.card ul,
+.card ol {
+    list-style: initial;
+}
+
+.card ul li,
+.card ol li {
+    list-style-type: auto;
+    margin-left: 24px;
+}

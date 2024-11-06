@@ -2,7 +2,7 @@ import z from 'zod'
 
 export const radarItemSchema = z.object({
   name: z.string().trim().min(1),
-  description: z.string().trim().min(1),
+  description: z.string().trim(),
   ring: z.object({
     id: z.string(),
     label: z.string().trim().min(1),

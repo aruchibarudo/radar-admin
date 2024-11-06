@@ -10,6 +10,7 @@ import { IconEdit } from '@consta/icons/IconEdit'
 import { IconHome } from '@consta/icons/IconHome'
 
 import RadarForm from '@/components/radars/form/RadarForm'
+import RadarItems from '@/components/radars/table/RadarItems'
 import ErrorInformer from '@/components/system/ErrorInformer'
 import { H1 } from '@/components/ui/Text'
 import { getRadar } from '@/services/radars/radarService'
@@ -54,6 +55,12 @@ const RadarPage = ({ params: { id } }: PageParams<'id'>) => {
       <GridItem>
         <RadarForm data={data} refetch={refetch} />
       </GridItem>
+
+      {data && (
+        <GridItem>
+          <RadarItems data={data} refetch={refetch} />
+        </GridItem>
+      )}
 
       <GridItem>
         <Link href="/">К списку радаров</Link>

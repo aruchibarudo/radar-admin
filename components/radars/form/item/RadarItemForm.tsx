@@ -1,5 +1,12 @@
+import dynamic from 'next/dynamic'
+
 import React, { useEffect, useState } from 'react'
-import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useQuery } from '@tanstack/react-query'
@@ -41,6 +48,13 @@ import {
 } from '@/services/radars/radarService'
 import { Radar } from '@/services/radars/types'
 
+const DynamicQuillEditor = dynamic(
+  () => import('@/components/ui/form/QuillEditor/QuillEditor'),
+  {
+    ssr: false,
+  },
+)
+
 const RadarItemForm = ({
   radar,
   itemId,
@@ -76,6 +90,8 @@ const RadarItemForm = ({
     control,
     name: 'radars',
   })
+
+  const [description, setDescription] = useState('')
 
   useEffect(() => {
     if (!radars || !item) {
@@ -144,7 +160,11 @@ const RadarItemForm = ({
   }
 
   const formSubmit = async (submitData: RadarItemFormData) => {
-    const transformedData = transformItemFormData(submitData)
+    const transformedData = transformItemFormData({
+      ...submitData,
+      description,
+    })
+
     try {
       if (itemId) {
         await updateRadarItem({ id: itemId, data: transformedData })
@@ -169,10 +189,12 @@ const RadarItemForm = ({
           </GridItem>
 
           <GridItem>
-            <TextFieldController
+            <Controller
               name="description"
-              label="Описание"
-              type="textarea"
+              control={control}
+              render={({ field: { value } }) => (
+                <DynamicQuillEditor onChange={setDescription} value={value} />
+              )}
             />
           </GridItem>
 

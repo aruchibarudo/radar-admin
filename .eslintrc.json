@@ -8,6 +8,7 @@
         "groups": [
           ["^next"],
           ["^react", "^react/.*", "^@hookform", "^zod"],
+          ["^quill", "^dompurify"],
           ["^@tanstack/react-query"],
           ["^@consta/uikit", "^@consta/icons"],
           ["^clsx"],
@@ -29,6 +30,7 @@
             "groups": [
               ["^next"],
               ["^react", "^react/.*", "^@hookform", "^zod"],
+              ["^quill", "^dompurify"],
               ["^@tanstack/react-query"],
               ["^@consta/uikit", "^@consta/icons"],
               ["^clsx"],

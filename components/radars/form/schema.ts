@@ -4,7 +4,7 @@ import { MAX_QUADRANTS, MAX_RINGS } from '@/components/radars/form/utils'
 
 export const radarSchema = z.object({
   name: z.string().trim().min(1),
-  description: z.string().trim().min(1),
+  description: z.string().trim(),
   rings: z
     .object({
       value: z.string().trim().min(1, 'Обязательное поле'),
