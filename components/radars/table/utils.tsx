@@ -29,6 +29,16 @@ export const transformItems = (items: RadarItem[]): RadarItemColumn[] => {
   }))
 }
 
+const getItemColumnKeys = (item: RadarItem) => {
+  const enumKeys = Object.keys(ItemColumnTitles) as Array<
+    keyof typeof ItemColumnTitles
+  >
+
+  const itemKeys = Object.keys(item) as Array<keyof typeof ItemColumnTitles>
+
+  return itemKeys.sort((a, b) => enumKeys.indexOf(a) - enumKeys.indexOf(b))
+}
+
 export const getItemColumns = ({
   items,
   setMenuState,
@@ -38,12 +48,12 @@ export const getItemColumns = ({
     return []
   }
 
-  const firstItem = items[0]
-  const keys = Object.keys(firstItem) as Array<keyof typeof ItemColumnTitles>
+  const columnKeys = getItemColumnKeys(items[0])
 
-  const columns = keys.map((key) => ({
+  const columns = columnKeys.map((key) => ({
     title: ItemColumnTitles[key],
     accessor: key,
+    sortable: key === 'name',
   })) as TableColumn<RadarItemColumn>[]
 
   columns.push({

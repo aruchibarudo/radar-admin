@@ -7,9 +7,9 @@ export enum ItemColumnTitles {
   name = 'Имя',
   description = 'Описание',
   ring = 'Ринг',
+  quadrant = 'Квадрант',
   ru = 'Отечественное решение',
   probation_result = 'Результат тестирования',
-  quadrant = 'Квадрант',
   actions = 'Действие',
 }
 
