@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@consta/uikit/Button'
 import { Table } from '@consta/uikit/Table'
@@ -11,6 +11,10 @@ import {
   ItemActionType,
   ItemMenuState,
 } from '@/components/radars/table/actions/types'
+import {
+  getItemFilterNames,
+  getItemFilters,
+} from '@/components/radars/table/filters/utils'
 import {
   RadarItemMenuState,
   RadarItemsProps,
@@ -113,6 +117,9 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
     menuState,
   })
 
+  const itemNames = useMemo(() => getItemFilterNames(data.items), [data])
+  const filters = useMemo(() => getItemFilters(itemNames), [itemNames])
+
   return (
     <>
       <Stack direction="row" alignItems="center">
@@ -125,7 +132,11 @@ const RadarItems = ({ data, refetch }: RadarItemsProps) => {
         />
       </Stack>
       {items.length ? (
-        <Table rows={transformItems(items)} columns={columns} />
+        <Table
+          rows={transformItems(items)}
+          columns={columns}
+          filters={filters}
+        />
       ) : (
         <Text as="p">Элементы отсутствуют</Text>
       )}
