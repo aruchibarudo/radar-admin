@@ -21,3 +21,11 @@ a {
 .Theme .Modal-Window {
   min-height: initial;
 }
+
+.custom-html-style ol {
+  list-style: decimal;
+}
+
+.custom-html-style ul {
+  list-style: disc;
+}

@@ -8,7 +8,7 @@
         "groups": [
           ["^next"],
           ["^react", "^react/.*", "^@hookform", "^zod"],
-          ["^quill", "^dompurify"],
+          ["^markdown-it", "^react-markdown-editor-lite", "^markdown-it-ins", "^turndown", "^html-truncate"],
           ["^@tanstack/react-query"],
           ["^@consta/uikit", "^@consta/icons"],
           ["^clsx"],
@@ -30,7 +30,7 @@
             "groups": [
               ["^next"],
               ["^react", "^react/.*", "^@hookform", "^zod"],
-              ["^quill", "^dompurify"],
+              ["^markdown-it", "^react-markdown-editor-lite", "^markdown-it-ins", "^turndown", "^html-truncate"],
               ["^@tanstack/react-query"],
               ["^@consta/uikit", "^@consta/icons"],
               ["^clsx"],

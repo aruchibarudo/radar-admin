@@ -1,12 +1,5 @@
-import dynamic from 'next/dynamic'
-
 import React, { useEffect, useState } from 'react'
-import {
-  Controller,
-  FormProvider,
-  useFieldArray,
-  useForm,
-} from 'react-hook-form'
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { useQuery } from '@tanstack/react-query'
@@ -36,6 +29,7 @@ import {
   formatSelectItem,
 } from '@/components/radars/form/utils'
 import ComboboxFieldController from '@/components/ui/form/ComboboxField/ComboboxFieldController'
+import MarkdownEditor from '@/components/ui/form/MarkdownEditor/MarkdownEditor'
 import SelectFieldController from '@/components/ui/form/SelectField/SelectFieldController'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
 import SwitchFieldController from '@/components/ui/form/SwitchField/SwitchFieldController'
@@ -47,13 +41,6 @@ import {
   updateRadarItem,
 } from '@/services/radars/radarService'
 import { Radar } from '@/services/radars/types'
-
-const DynamicQuillEditor = dynamic(
-  () => import('@/components/ui/form/QuillEditor/QuillEditor'),
-  {
-    ssr: false,
-  },
-)
 
 const RadarItemForm = ({
   radar,
@@ -90,8 +77,6 @@ const RadarItemForm = ({
     control,
     name: 'radars',
   })
-
-  const [description, setDescription] = useState('')
 
   useEffect(() => {
     if (!radars || !item) {
@@ -162,7 +147,6 @@ const RadarItemForm = ({
   const formSubmit = async (submitData: RadarItemFormData) => {
     const transformedData = transformItemFormData({
       ...submitData,
-      description,
     })
 
     try {
@@ -189,12 +173,10 @@ const RadarItemForm = ({
           </GridItem>
 
           <GridItem>
-            <Controller
-              name="description"
+            <MarkdownEditor
               control={control}
-              render={({ field: { value } }) => (
-                <DynamicQuillEditor onChange={setDescription} value={value} />
-              )}
+              label="Описание"
+              name="description"
             />
           </GridItem>
 

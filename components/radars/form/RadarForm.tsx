@@ -1,8 +1,7 @@
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 
 import React, { useState } from 'react'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@consta/uikit/Button'
@@ -20,16 +19,10 @@ import {
   transformRadarFormData,
 } from '@/components/radars/form/utils'
 import Stack from '@/components/ui/container/Stack'
+import MarkdownEditor from '@/components/ui/form/MarkdownEditor/MarkdownEditor'
 import TextFieldController from '@/components/ui/form/Textfield/TextFieldController'
 import { useSnackbar } from '@/components/ui/snackbar/hooks'
 import { createRadar, updateRadar } from '@/services/radars/radarService'
-
-const DynamicQuillEditor = dynamic(
-  () => import('@/components/ui/form/QuillEditor/QuillEditor'),
-  {
-    ssr: false,
-  },
-)
 
 const RadarForm = ({ data }: EditRadarFormProps) => {
   const router = useRouter()
@@ -46,12 +39,9 @@ const RadarForm = ({ data }: EditRadarFormProps) => {
     handleSubmit,
   } = methods
 
-  const [description, setDescription] = useState(data?.description ?? '')
-
   const formSubmit = async (submitData: RadarFormData) => {
     const transformedData = transformRadarFormData({
       ...submitData,
-      description,
     })
 
     try {
@@ -90,19 +80,11 @@ const RadarForm = ({ data }: EditRadarFormProps) => {
             <Stack className="max-w-screen-md">
               <TextFieldController name="name" label="Имя" />
 
-              <div>
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field: { value } }) => (
-                    <DynamicQuillEditor
-                      onChange={setDescription}
-                      value={value}
-                      label="Описание"
-                    />
-                  )}
-                />
-              </div>
+              <MarkdownEditor
+                control={control}
+                label="Описание"
+                name="description"
+              />
 
               <RingFields control={control} errors={errors.rings} />
 

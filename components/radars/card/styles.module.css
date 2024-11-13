@@ -8,3 +8,45 @@
     list-style-type: auto;
     margin-left: 24px;
 }
+
+.card table {
+    font-size: 14px;
+    line-height: 1.7;
+    max-width: 100%;
+    overflow: auto;
+    border: 1px solid #f6f6f6;
+    border-collapse: collapse;
+    border-spacing: 0;
+    box-sizing: border-box;
+}
+
+.card table tr {
+    border: 1px solid #efefef;
+}
+
+.card table th {
+    text-align: center;
+    font-weight: 700;
+    border: 1px solid #efefef;
+    padding: 10px 6px;
+    background-color: #f5f7fa;
+    word-break: break-word;
+}
+
+.card table td {
+    border: 1px solid #efefef;
+    text-align: left;
+    padding: 10px 15px;
+    word-break: break-word;
+    min-width: 60px;
+}
+
+.card blockquote {
+    position: relative;
+    margin: 16px 0;
+    padding: 5px 8px 5px 30px;
+    background: none repeat scroll 0 0 rgba(102, 128, 153, .05);
+    color: #333;
+    border: none;
+    border-left: 10px solid #d6dbdf;
+}
