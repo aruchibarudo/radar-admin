@@ -8,7 +8,10 @@ export const radarItemSchema = z.object({
     label: z.string().trim().min(1),
   }),
   ru: z.boolean(),
-  ftt_matches: z.boolean(),
+  probation_result: z.object({
+    id: z.string(),
+    label: z.string().trim().min(1),
+  }),
   radars: z
     .object({
       radarId: z.string(),

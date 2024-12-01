@@ -1,7 +1,11 @@
-export enum RadarItemProbationResult {
+export enum ProbationResultKey {
   FttMatches = 'ftt_matches',
   FttNotMatches = 'ftt_not_matches',
 }
+export type ProbationResult =
+  | ProbationResultKey.FttMatches
+  | ProbationResultKey.FttNotMatches
+  | string
 
 export type RadarItem = {
   id: string
@@ -10,7 +14,7 @@ export type RadarItem = {
   ring: string
   quadrant: string
   ru: boolean
-  probation_result: RadarItemProbationResult
+  probation_result: ProbationResult
 }
 
 export type Radar = {

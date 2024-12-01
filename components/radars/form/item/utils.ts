@@ -7,11 +7,7 @@ import {
   formatSelectItem,
 } from '@/components/radars/form/utils'
 import { SelectItem } from '@/components/ui/form/SelectField/types'
-import {
-  Radar,
-  RadarItemFormQuadrant,
-  RadarItemProbationResult,
-} from '@/services/radars/types'
+import { Radar, RadarItemFormQuadrant } from '@/services/radars/types'
 
 export const getRadarsList = (radars: Radar[] | undefined): SelectItem[] => {
   if (!radars) {
@@ -38,7 +34,7 @@ export const defaultItemFormData = {
   description: '',
   ru: false,
   ring: formatSelectItem(''),
-  ftt_matches: formatProbationResult(RadarItemProbationResult.FttNotMatches),
+  probation_result: formatProbationResult(''),
   radars: [
     formatItemRadar({
       radarId: '',
@@ -50,28 +46,19 @@ export const defaultItemFormData = {
 }
 
 export const transformItemFormData = (data: RadarItemFormData) => {
-  const { ftt_matches, ...formData } = data
+  const ring = data.ring.label
 
-  const ring = formData.ring.label
+  const radars = data.radars.reduce<RadarItemFormQuadrant[]>((acc, item) => {
+    item.quadrants.forEach((quadrant) => {
+      acc.push({ id: item.radarId, quadrant: quadrant.label })
+    })
 
-  const radars = formData.radars.reduce<RadarItemFormQuadrant[]>(
-    (acc, item) => {
-      item.quadrants.forEach((quadrant) => {
-        acc.push({ id: item.radarId, quadrant: quadrant.label })
-      })
-
-      return acc
-    },
-    [],
-  )
-
-  const probationResult = ftt_matches
-    ? RadarItemProbationResult.FttMatches
-    : RadarItemProbationResult.FttNotMatches
+    return acc
+  }, [])
 
   return {
-    ...formData,
-    probation_result: probationResult,
+    ...data,
+    probation_result: data.probation_result.id,
     ring,
     radars,
   }

@@ -27,6 +27,7 @@ import {
   formatProbationResult,
   formatSelectData,
   formatSelectItem,
+  getProbationResults,
 } from '@/components/radars/form/utils'
 import ComboboxFieldController from '@/components/ui/form/ComboboxField/ComboboxFieldController'
 import MarkdownEditor from '@/components/ui/form/MarkdownEditor/MarkdownEditor'
@@ -110,11 +111,10 @@ const RadarItemForm = ({
       }),
     )
 
-    const { probation_result } = item
     reset({
       ...item,
       ring: formatSelectItem(item.ring),
-      ftt_matches: formatProbationResult(probation_result),
+      probation_result: formatProbationResult(item.probation_result),
       radars: formattedItemRadars,
     })
   }, [item, radars, reset])
@@ -194,9 +194,10 @@ const RadarItemForm = ({
           </GridItem>
 
           <GridItem>
-            <SwitchFieldController
-              name="ftt_matches"
-              label="Соответствует ФТТ"
+            <SelectFieldController
+              name="probation_result"
+              label="Апробация результатов"
+              items={getProbationResults()}
             />
           </GridItem>
 

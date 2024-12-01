@@ -5,7 +5,8 @@ import {
   FormField,
   RadarFormData,
 } from '@/components/radars/form/types'
-import { RadarItemProbationResult } from '@/services/radars/types'
+import { SelectItem } from '@/components/ui/form/SelectField/types'
+import { ProbationResult, ProbationResultKey } from '@/services/radars/types'
 
 export const MAX_RINGS = 4
 export const MAX_QUADRANTS = 4
@@ -24,8 +25,14 @@ export const formatFieldsToObjects = (fields: string[]) =>
 export const formatFieldsToArray = (fields: FormField[]) =>
   fields.map(({ value }) => value)
 
-export const formatSelectItem = (label: string) => ({ id: label, label })
-export const formatSelectData = (data: string[] | undefined) => {
+export const formatSelectItem = (item: string | SelectItem) => {
+  if (typeof item === 'string') {
+    return { id: item, label: item }
+  }
+
+  return item
+}
+export const formatSelectData = (data: (string | SelectItem)[] | undefined) => {
   if (!data) {
     return []
   }
@@ -33,9 +40,36 @@ export const formatSelectData = (data: string[] | undefined) => {
   return data.map(formatSelectItem)
 }
 
-export const formatProbationResult = (
-  probationResult: RadarItemProbationResult,
-) => probationResult === RadarItemProbationResult.FttMatches
+export const getProbationResultLabel = (probationResult: ProbationResult) => {
+  const labelsMap: Record<ProbationResult, string> = {
+    [ProbationResultKey.FttMatches]: 'Соответствует ФТТ',
+    [ProbationResultKey.FttNotMatches]: 'Не соответствует ФТТ',
+  }
+
+  return labelsMap[probationResult] ?? ''
+}
+
+export const formatProbationResult = (probationResult: ProbationResult) => {
+  if (!probationResult) {
+    return {
+      id: '',
+      label: 'Не прошло апробацию',
+    }
+  }
+
+  return formatSelectItem({
+    id: probationResult,
+    label: getProbationResultLabel(probationResult),
+  })
+}
+export const formatProbationResults = (data: (ProbationResult | '')[]) =>
+  data.map(formatProbationResult)
+export const getProbationResults = () =>
+  formatProbationResults([
+    '',
+    ProbationResultKey.FttMatches,
+    ProbationResultKey.FttNotMatches,
+  ])
 
 const defaultRadarFormData = {
   name: '',

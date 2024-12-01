@@ -2,6 +2,7 @@ import { TableColumn } from '@consta/uikit/Table'
 import { IconEdit } from '@consta/icons/IconEdit'
 import { IconRemove } from '@consta/icons/IconRemove'
 
+import { getProbationResultLabel } from '@/components/radars/form/utils'
 import ItemActionsMenu from '@/components/radars/table/actions/ItemActionsMenu'
 import {
   ItemActionType,
@@ -11,7 +12,7 @@ import {
   ItemColumnTitles,
   RadarItemColumn,
 } from '@/components/radars/table/types'
-import { RadarItem, RadarItemProbationResult } from '@/services/radars/types'
+import { RadarItem } from '@/services/radars/types'
 
 const MAX_DESCRIPTION_LENGTH = 120
 
@@ -27,10 +28,7 @@ export const transformItems = (items: RadarItem[]): RadarItemColumn[] => {
         : item.description,
     id: transformItemId(item),
     ru: item.ru ? 'Да' : 'Нет',
-    probation_result:
-      item.probation_result === RadarItemProbationResult.FttMatches
-        ? 'Соответствует ФТТ'
-        : 'Не соответствует ФТТ',
+    probation_result: getProbationResultLabel(item.probation_result),
     action: null,
   }))
 }
